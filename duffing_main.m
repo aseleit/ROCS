@@ -1,15 +1,14 @@
-clear; close all; clc;
+% clear; close all; clc;
 %% System parameters
-epsilon = 10;
+epsilon = 1;
 tf = 2;
 N = 40;%7,9
 omega = 1; %rad/sec
-beta = 0.94;
 x10 = 0;
 x20 = 0;
 x1f = 5;
 x2f = 2;
-BCtype = 'P0-Vf';%'fixed','free','P0-Pf','P0-Vf','V0-Pf'
+BCtype = 'fixed';%'fixed','free','P0-Pf','P0-Vf','V0-Pf'
 BC = [x10,x20,x1f,x2f]';
 %% Approximation matrix
 tau = linspace(-1,1,N)';
@@ -24,35 +23,67 @@ for i = 1 : N
 end
 D = phid/phi;
 %% Solving system of NAE
-f = @(X) duffingNAE(X,BC,omega,beta,D,N,BCtype);
 switch BCtype
     case 'fixed'
+        beta = 0.9;
         initial_guess = [1*ones(2*N,1);3.8*ones(2*N,1)];
     case 'free'
+        beta = 0.9;
         initial_guess = [1*ones(2*N,1);3.8*ones(2*N,1)]; 
     case 'P0-Pf'
+        beta = 0.94;
         initial_guess = [20*ones(2*N,1);1*ones(2*N,1)]; 
     case 'P0-Vf'
+        beta = 0.94;
         initial_guess = [20*ones(2*N,1);1*ones(2*N,1)]; 
     case 'V0-Pf'
+        beta = 0.97;
         initial_guess = [1*ones(1*N,1);1*ones(1*N,1);0.3*ones(1*N,1);0.3*ones(1*N,1)]; 
 end
+f = @(X) duffingNAE(X,BC,omega,beta,D,N,BCtype);
 options = optimset('Display','iter','Algorithm','levenberg-marquardt','Jacobian','off','TolX',1e-14,'TolFun',1e-14);
 [xx,fval1,exitflag1,output1] = fsolve(f,initial_guess,options);
 X1 = xx(1:N);
 X2 = xx(N+1:2*N);
 L1 = xx(2*N+1:3*N);
-L2 = xx(3*N:4*N);
+L2 = xx(3*N+1:4*N);
 %% Validation
-
-
-
+IC = [X1(1) X2(2) L1(1) L2(1)];
+fexact = @(t,Xexact)duffingDE(Xexact,omega,beta);
+opts = odeset('RelTol',1e-20,'AbsTol',1e-20);
+[t, Xexact] = ode45(fexact,t,IC,opts);
+% X1error = abs(X1 - Xexact(:,1));
+X1error = abs(X1 - x1iclocs);
+% X2error = abs(X2 - Xexact(:,2));
+X2error = abs(X2 - x2iclocs);
+% L1error = abs(L1 - Xexact(:,3));
+% L2error = abs(L2 - Xexact(:,4));
+Uerror = abs(L2 - uiclocs);
 %%Plotting
-figure(1)
-plot(t,X1)
-xlabel('time [sec]')
-ylabel('x_1')
-figure(2)
-plot(t,X2)
-ylabel('x_2')
-xlabel('time [sec]')
+% figure(1)
+plot(t,X1,'*')
+hold on
+plot(t,X2,'*')
+plot(t,-L2,'*')
+axis('tight')
+legend('x1','x2','u')
+
+plot(t,Xexact(:,1),'o')
+hold on
+plot(t,Xexact(:,2),'o')
+plot(t,-Xexact(:,4),'o')
+axis('tight')
+legend('x1','x2','u')
+xlabel('time[sec]')
+ylabel('Exact states and control')
+
+
+figure(3)
+plot(t,X1error)
+figure(4)
+plot(t,X2error)
+figure(5)
+plot(t,Uerror)
+
+
+
