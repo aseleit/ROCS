@@ -1,5 +1,6 @@
 clear all;close all;format compact;clc;
 %new line in this function
+%local test one for local collocation
 [problem,guess]=DuffingOscillator1;          % Fetch the problem definition
 options= problem.settings(30);                  % Get options and solver settings 
 [solution,MRHistory]=solveMyProblem( problem,guess,options);
