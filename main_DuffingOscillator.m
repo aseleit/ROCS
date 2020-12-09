@@ -9,7 +9,7 @@ problem.sim.functions=@DuffingOscillator_Dynamics_Sim_Exact;
 %% System parameters
 epsilon = 10;
 tf = 2;
-N = 40;%7,9
+N = 40;% Number of nodes
 omega = 1; %rad/sec
 x10 = 0;
 x20 = 0;
@@ -33,9 +33,9 @@ D = phid/phi;
 switch BCtype
     case 'fixed'
         beta = 0.9;
-%         initial_guess = [1*ones(2*N,1);3.8*ones(2*N,1)];
+        initial_guess = [1*ones(2*N,1);3.8*ones(2*N,1)];
 %         initial_guess = [10*ones(2*N,1);10*ones(2*N,1)];
-        initial_guess = [1*ones(1*N,1);3.5*ones(1*N,1);3.5*ones(1*N,1);3.5*ones(1*N,1)]; 
+%         initial_guess = [1*ones(1*N,1);3.5*ones(1*N,1);3.5*ones(1*N,1);3.5*ones(1*N,1)]; 
 
     case 'free'
         beta = 0.9;
