@@ -1,8 +1,8 @@
 clear all; close all; clc;
 epsilon = 1;
 tf = 2;
-N = 2;% Number of nodes
-M = 40; % Number of elements
+N = 5;% Number of nodes
+M = 20; % Number of elements
 tf = 2;
 omega = 1; %rad/sec
 x10 = 0;
@@ -16,8 +16,7 @@ beta = 0.9;
 % initial_guess = 1*ones(4*N*M,1);
 initial_guess = [1*ones(2*N*M,1);3.8*ones(2*N*M,1)];
 
-%% 
-
+%% Approximation matrix
 D = zeros(N,N,M);
 phi = zeros(N,N,M);
 phid = zeros(N,N,M);
