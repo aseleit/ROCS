@@ -44,8 +44,8 @@ funcs.iterfunc  = @callback;
 funcs.constraints = @(X) constraints(X,BC,omega,beta,D,N,M,ip);
 % funcs.gradient = @(X) duffingJacobian(X,BC,omega,beta,D,N);
 funcs.gradient = @(X) duffingGradient_ipopt(X,BC,omega,beta,D,N);
-funcs.jacobian = @(X) duffingJacobian_ipopt(X,BC,omega,beta,D,N);
-ipopt_options.ipopt.hessian_approximation      = 'limited-memory';%limited-memory
+funcs.jacobian = @(X) duffingGradient_ipopt()
+ipopt_options.ipopt.hessian_approximation      = 'limited-memory';
 ipopt_options.ipopt.limited_memory_update_type = 'bfgs';
 ipopt_options.ipopt.derivative_test            = 'first-order';
 
@@ -54,7 +54,7 @@ ipopt_options.ipopt.derivative_test            = 'first-order';
 % Set the IPOPT ipopt_options.
 ipopt_options.ipopt.linear_solver =  'mumps'; %'ma57'; 'pardiso';
 ipopt_options.ipopt.mu_strategy   = 'adaptive';
-ipopt_options.ipopt.print_level   = 5;
+ipopt_options.ipopt.print_level   = 0;
 ipopt_options.ipopt.tol           = 1e-14;
 % ipopt_options.ipopt.max_iter      = 1000;
 
