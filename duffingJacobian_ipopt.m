@@ -51,8 +51,8 @@ J = [dR1dx1 dR1dx2 dR1dL1 dR1dL2;...
     dR3dx1 dR3dx2 dR3dL1 dR3dL2;...
     dR4dx1 dR4dx2 dR4dL1 dR4dL2];
 
-
 J(N+1,:) = [ones(1,N), zeros(1,3*N)];
 J(2*N+1,:) = [zeros(1,N), ones(1,N), zeros(1,2*N)];
 J(2*N,:) = [ones(1,N), zeros(1,3*N)];
 J(3*N,:) = [zeros(1,N), ones(1,N), zeros(1,2*N)];
+J = sparse(J);

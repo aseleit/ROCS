@@ -1,6 +1,12 @@
+% Solution of the Nonlinear duffing oscillator problem 
+% The optimal control problem is approximated using CRBFS
+% The system of NAEs is solved using: 
+% 1. fsolve (working solution) - minimization of residual vector
+% 2. IPOPT (not working so far)
+% 3. fmincon - minimization of a scalar
+
 clear all; close all; clc;
 epsilon = 1;
-tf = 2;
 N = 40;% Number of nodes
 M = 1; % Number of elements
 tf = 2;
@@ -15,6 +21,7 @@ beta = 0.9;
 % initial_guess = [1*ones(1*N,1);3.5*ones(1*N,1);3.5*ones(1*N,1);3.5*ones(1*N,1)]; 
 % initial_guess = 1*ones(4*N*M,1);
 initial_guess = [1*ones(2*N*M,1);3.8*ones(2*N*M,1)];
+% initial_guess = [1*rand(2*N*M,1);.8*rand(2*N*M,1)];
 
 %% Approximation matrix
 D = zeros(N,N,M);
@@ -37,14 +44,17 @@ end
 %% IPOPT Solution
 ip=1;
 funcs.objective = @(X) duffingNAE_local(X,BC,omega,beta,D,N,M,ip);
+funcs.gradient = @(X) duffingGradient_ipopt(X,BC,omega,beta,D,N); %the gradient of the objective function
+
 funcs.iterfunc  = @callback;
 
 %  ipopt_options.cl = [ 0 0 0 0 ];             % Lower bounds on constraints.
 %  ipopt_options.cu = [ 5 2 inf inf];             % Upper bounds on constraints.
-funcs.constraints = @(X) constraints(X,BC,omega,beta,D,N,M,ip);
-% funcs.gradient = @(X) duffingJacobian(X,BC,omega,beta,D,N);
-funcs.gradient = @(X) duffingGradient_ipopt(X,BC,omega,beta,D,N);
-funcs.jacobian = @(X) duffingJacobian_ipopt(X,BC,omega,beta,D,N);
+
+% funcs.constraints = @(XX) constraints(XX,BC,omega,beta,D,N,M,ip);
+% funcs.jacobian = @(X) duffingJacobian_ipopt(X,BC,omega,beta,D,N); % The Jacobian (1st derivative) of the Constraints
+% funcs.jacobianstructure = @()duffingJacobianStr_ipopt(N);
+
 ipopt_options.ipopt.hessian_approximation      = 'limited-memory';%limited-memory
 ipopt_options.ipopt.limited_memory_update_type = 'bfgs';
 ipopt_options.ipopt.derivative_test            = 'first-order';
@@ -61,9 +71,14 @@ ipopt_options.ipopt.tol           = 1e-14;
 % Run IPOPT.
 [x_ipopt, info] = ipopt(initial_guess,funcs,ipopt_options);
 
+%% CRBF Solution using fmincon
+fmincon_options = optimset('Display','iter','TolX',1e-14);
+% [x_fmincon,Fval,ExitFlag,Output] = fmincon(@(x) duffingNAE_local(x,BC,omega,beta,D,N,M,ip),initial_guess,[],[],...
+%     [],[],[],[],@(XX) constraints(XX,BC,omega,beta,D,N,M,ip),fmincon_options); %if constraints exist..
+[x_fmincon,Fval,ExitFlag,Output] = fmincon(@(x) duffingNAE_local(x,BC,omega,beta,D,N,M,ip),initial_guess,[],[],...
+    [],[],[],[],[],fmincon_options); %if constraints don't exist..
 
-
-%%
+%% CRBF Solution using fsolve
 ip=0;
 f = @(X) duffingNAE_local2(X,BC,omega,beta,D,N,M,ip);
 options = optimset('Display','iter','Algorithm','Levenberg-Marquardt','Jacobian','off','TolX',1e-20,'TolFun',1e-20);

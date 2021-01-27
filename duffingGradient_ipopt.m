@@ -19,10 +19,6 @@ R(N+1)   = x1(1) - x10;
 R(2*N+1) = x2(1) - x20;
 R(2*N)   = x1(end) - x1f;
 R(3*N)   = x2(end) - x2f;
-
-
-
-
 %% Jacobian
 dR1dx1 = D; %
 dR1dx2 = -ones(N);
@@ -58,4 +54,5 @@ J(2*N,:) = [ones(1,N), zeros(1,3*N)];
 J(3*N,:) = [zeros(1,N), ones(1,N), zeros(1,2*N)];
 
 %% Gradient for ipopt
-g = R*J;
+% g = J*R';
+g = R';
