@@ -41,7 +41,7 @@ switch BCtype
         initial_guess = [1*ones(1*N,1);1*ones(1*N,1);0.3*ones(1*N,1);0.3*ones(1*N,1)]; 
 end
 f = @(X) duffingNAE(X,BC,omega,beta,D,N,BCtype);
-options = optimset('Display','iter','Algorithm','levenberg-marquardt','Jacobian','off','TolX',1e-14,'TolFun',1e-14);
+options = optimset('Display','iter','Algorithm','levenberg-marquardt','Jacobian','on','TolX',1e-14,'TolFun',1e-14);
 [xx,fval1,exitflag1,output1] = fsolve(f,initial_guess,options);
 X1 = xx(1:N);
 X2 = xx(N+1:2*N);
@@ -53,12 +53,12 @@ fexact = @(t,Xexact)duffingDE(Xexact,omega,beta);
 opts = odeset('RelTol',1e-20,'AbsTol',1e-20);
 [t, Xexact] = ode45(fexact,t,IC,opts);
 % X1error = abs(X1 - Xexact(:,1));
-X1error = abs(X1 - x1iclocs);
+% X1error = abs(X1 - x1iclocs);
 % X2error = abs(X2 - Xexact(:,2));
-X2error = abs(X2 - x2iclocs);
+% X2error = abs(X2 - x2iclocs);
 % L1error = abs(L1 - Xexact(:,3));
 % L2error = abs(L2 - Xexact(:,4));
-Uerror = abs(L2 - uiclocs);
+% Uerror = abs(L2 - uiclocs);
 %%Plotting
 % figure(1)
 plot(t,X1,'*')
