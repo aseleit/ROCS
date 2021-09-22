@@ -1,4 +1,4 @@
-% Local collocation for the duffing problem 
+% Local collocation for the duffing problem
 % The states and costates are defined as follows
 % x1 = X(1:N*M);
 % x2 = X(N*M+1 : 2*N*M);
@@ -9,8 +9,8 @@
 
 
 
-function R = duffingNAE_local(x,BC,omega,beta,D,N,M,ip)
-%% State, Costates and BCs 
+function R = duffingNAE_local(x,BC,omega,beta,D,N,M,ip,BCtype)
+%% State, Costates and BCs
 % this needs review x1 = X(1:N)
 x1 = x(1:N*M);
 x1 = reshape(x1,[N,M]);
@@ -21,6 +21,7 @@ L1 = reshape(L1,[N,M]);
 L2 = x(3*N*M+1 : 4*N*M);
 L2 = reshape(L2,[N,M]);
 
+
 % for k = 1:M
 %     Elb(k) = (k-1)*LA+1;    %left boundary of each segment
 %     Erb(k) = Elb(k)+LA-1;   %right boundary of each segment
@@ -29,8 +30,6 @@ L2 = reshape(L2,[N,M]);
 %         Srb(ii,k) = Elb(k) + ii*n-1;
 %     end
 % end
-
-
 
 % x1 = [X(1:N); X(4*N+1:5*N)];
 % x2 = [X(N+1:2*N); X(5*N+1:6*N)];
@@ -47,37 +46,56 @@ x1f = BC(3);
 x2f = BC(4);
 
 R = zeros(N,M);
+%% System of Equations
 for k = 1 : M
-    R(1:N,k) = D(:,:,k)*x1(:,k) - x2(:,k);% Nx1 = NxN * Nx1 - Nx1;
-    R(N+1:2*N,k) = D(:,:,k)*x2(:,k) + omega^2*x1(:,k) + beta*x1(:,k).^3 + L2(:,k);
+    R(1:N,k)       = D(:,:,k)*x1(:,k) - x2(:,k);% Nx1 = NxN * Nx1 - Nx1;
+    R(N+1:2*N,k)   = D(:,:,k)*x2(:,k) + omega^2*x1(:,k) + beta*x1(:,k).^3 + L2(:,k);
     R(2*N+1:3*N,k) = D(:,:,k)*L1(:,k) - L2(:,k).*(omega^2 + 3*beta*x1(:,k).^2);
     R(3*N+1:4*N,k) = D(:,:,k)*L2(:,k) + L1(:,k);
 end
-% Continuity conditions
-% if M > 1
-    for kk = 2 : M
-%         R(1,kk) = -R(N,kk-1);
-%         R(N+1,kk) = -R(2*N,kk-1);
-%         R(2*N+1,kk) = -R(3*N,kk-1);
-%         R(3*N+1,kk) = -R(4*N,kk-1);
-
-        R(1,kk) = x1(1,kk) - x1(N,kk-1);
-        R(N+1,kk) = x2(1,kk) - x2(end,kk-1);
-        R(2*N+1,kk) = L1(1,kk) - L1(end,kk-1);
-        R(3*N+1,kk) = L2(1,kk) - L2(end,kk-1);
-
-    end
-% end
-% Boundary conditions
-R(N+1,1) = x1(1,1) - x10; % IC 1 in element 1
-R(2*N+1,1) = x2(1,1) - x20; % IC 2 in element 1
-R(2*N,end) = x1(end,end) - x1f; % FC 1 in last element
-R(3*N,end) = x2(end,end) - x2f; % FC 2 in last element
+%% Boundary conditions
+switch BCtype
+    case "fixed" %fixed final state
+        R(1,1)     = x1(1,1) - x10; % IC 1 in element 1
+        R(N+1,1)   = x2(1,1) - x20; % IC 2 in element 1
+        R(3*N,end) = x1(end,end) - x1f; % FC 1 in last element
+        R(4*N,end) = x2(end,end) - x2f; % FC 2 in last element
+    case "free" %free final state
+        s11 = 1;
+        s22 = 1;
+        R(1,1)   = x1(1,1) - x10;
+        R(N+1,1) = x2(1,1) - x20;
+        R(3*N,end) = L1(end,end) - s11*(x1(end,end)-x1f);
+        R(4*N,end) = L2(end,end) - s22*(x2(end,end)-x2f);
+end
+%% Continuity conditions
+for kk = 2 : M
+    R(1,kk)     = x1(1,kk) - x1(end,kk-1);
+    R(N+1,kk)   = x2(1,kk) - x2(end,kk-1);
+    R(2*N+1,kk) = L1(1,kk) - L1(end,kk-1);
+    R(3*N+1,kk) = L2(1,kk) - L2(end,kk-1);
+end
+%% Output Residual Vector
 % Function output
 R = R(:);  %[all state segment1; all states segment2; ... ; all states last segment];
-if ip == 1
-    R = 1/2*(R'*R);
-end
+% if ip == 1
+%     R = 1/2*(R'*R);
+% end
+% 
+
+
+% R(1:N) = D*x1 - x2;
+% R(N+1:2*N) = D*x2 + omega^2*x1 + beta*x1.^3 + L2;
+% R(2*N+1:3*N) = D*L1 - L2.*(omega^2 + 3*beta*x1.^2);
+% R(3*N+1:4*N) = D*L2 + L1;
+% % BCs
+% R(1)   = x1(1) - x10;
+% R(N+1) = x2(1) - x20;
+% R(3*N)   = x1(end) - x1f;
+% R(4*N)   = x2(end) - x2f;
+% if ip == 1
+%     R = 1/2*(R*R');
+% end
 
 
 %[x2 all sements; x2 all segments; L1 all segments; L2 all segments]

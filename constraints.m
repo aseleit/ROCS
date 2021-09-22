@@ -43,53 +43,52 @@ x10 = BC(1);
 x20 = BC(2);
 x1f = BC(3);
 x2f = BC(4);
-
-for k = 1 : M
-    R1(1:N,k) = D(:,:,k)*x1(:,k) - x2(:,k);% Nx1 = NxN * Nx1 - Nx1;
-    R2(1:N,k) = D(:,:,k)*x2(:,k) + omega^2*x1(:,k) + beta*x1(:,k).^3 + L2(:,k);
-    R3(1:N,k) = D(:,:,k)*L1(:,k) - L2(:,k).*(omega^2 + 3*beta*x1(:,k).^2);
-    R4(1:N,k) = D(:,:,k)*L2(:,k) + L1(:,k);
-end
-% Continuity conditions
-% if M > 1
-for kk = 2 : M
-    %         R(1,kk) = -R(N,kk-1);
-    %         R(N+1,kk) = -R(2*N,kk-1);
-    %         R(2*N+1,kk) = -R(3*N,kk-1);
-    %         R(3*N+1,kk) = -R(4*N,kk-1);
-    
-    R1(1,kk) = x1(1,kk) - x1(N,kk-1);
-    R2(1,kk) = x2(1,kk) - x2(end,kk-1);
-    R3(1,kk) = L1(1,kk) - L1(end,kk-1);
-    R4(1,kk) = L2(1,kk) - L2(end,kk-1);
-    
-end
+% 
+% for k = 1 : M
+%     R1(1:N,k) = D(:,:,k)*x1(:,k) - x2(:,k);% Nx1 = NxN * Nx1 - Nx1;
+%     R2(1:N,k) = D(:,:,k)*x2(:,k) + omega^2*x1(:,k) + beta*x1(:,k).^3 + L2(:,k);
+%     R3(1:N,k) = D(:,:,k)*L1(:,k) - L2(:,k).*(omega^2 + 3*beta*x1(:,k).^2);
+%     R4(1:N,k) = D(:,:,k)*L2(:,k) + L1(:,k);
 % end
-% Boundary conditions
-R2(1,1) = x1(1,1) - x10; % IC 1 in element 1
-R3(1,1) = x2(1,1) - x20; % IC 2 in element 1
-R2(N,end) = x1(end,end) - x1f; % FC 1 in last element
-R3(N,end) = x2(end,end) - x2f; % FC 2 in last element
-% Function output
-
-% Try changing the constraints to the initial and final
-% IF local IC, FC and the intermediate BCS
-
-Ceq = [R1(:);R2(:);R3(:);R4(:)];  %[all state segment1; all states segment2; ... ; all states last segment];
-%[x2 all sements; x2 all segments; L1 all segments; L2 all segments]
-% if ip == 1
-%     R = 1/2*(R'*R);
+% % Continuity conditions
+% % if M > 1
+% for kk = 2 : M
+%     %         R(1,kk) = -R(N,kk-1);
+%     %         R(N+1,kk) = -R(2*N,kk-1);
+%     %         R(2*N+1,kk) = -R(3*N,kk-1);
+%     %         R(3*N+1,kk) = -R(4*N,kk-1);
+%     
+%     R1(1,kk) = x1(1,kk) - x1(N,kk-1);
+%     R2(1,kk) = x2(1,kk) - x2(end,kk-1);
+%     R3(1,kk) = L1(1,kk) - L1(end,kk-1);
+%     R4(1,kk) = L2(1,kk) - L2(end,kk-1);
+%     
 % end
+% % end
+% % Boundary conditions
+% R2(1,1) = x1(1,1) - x10; % IC 1 in element 1
+% R3(1,1) = x2(1,1) - x20; % IC 2 in element 1
+% R2(N,end) = x1(end,end) - x1f; % FC 1 in last element
+% R3(N,end) = x2(end,end) - x2f; % FC 2 in last element
+% % Function output
+% 
+% % Try changing the constraints to the initial and final
+% % IF local IC, FC and the intermediate BCS
+% 
+% Ceq = [R1(:);R2(:);R3(:);R4(:)];  %[all state segment1; all states segment2; ... ; all states last segment];
+% %[x2 all sements; x2 all segments; L1 all segments; L2 all segments]
+% % if ip == 1
+% %     R = 1/2*(R'*R);
+% % end
 
 R(1:N) = D*x1 - x2;
 R(N+1:2*N) = D*x2 + omega^2*x1 + beta*x1.^3 + L2;
 R(2*N+1:3*N) = D*L1 - L2.*(omega^2 + 3*beta*x1.^2);
 R(3*N+1:4*N) = D*L2 + L1;
 % BCs
-R(N+1)   = x1(1) - x10;
-R(2*N+1) = x2(1) - x20;
-R(2*N)   = x1(end) - x1f;
-R(3*N)   = x2(end) - x2f;
-
+R(1)   = x1(1) - x10;
+R(N+1) = x2(1) - x20;
+R(3*N)   = x1(end) - x1f;
+R(4*N)   = x2(end) - x2f;
 Ceq = R;
 

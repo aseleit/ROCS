@@ -1,7 +1,4 @@
 function Jstr = duffingJacobianStr_ipopt(N)
-
-Jstr = [ones(N), eye(N), zeros(N), zeros(N);...
-        eye(N), ones(N), zeros(N), eye(N);...
-        eye(N), zeros(N), ones(N), eye(N);...
-        zeros(N), zeros(N), eye(N), ones(N)];
+global Jstr
 Jstr = sparse(Jstr);
+

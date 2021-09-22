@@ -1,4 +1,4 @@
-% clear; close all; clc;
+ clear; close all; clc;
 %% System parameters
 epsilon = 1;
 tf = 2;
@@ -25,8 +25,9 @@ D = phid/phi;
 %% Solving system of NAE
 switch BCtype
     case 'fixed'
-        beta = 0.9;
-        initial_guess = [1*ones(2*N,1);3.8*ones(2*N,1)];
+        beta = .9;
+        initial_guess = [10*ones(2*N,1);3.8*ones(2*N,1)];
+%         initial_guess = zeros(4*N   ,1);
     case 'free'
         beta = 0.9;
         initial_guess = [1*ones(2*N,1);3.8*ones(2*N,1)]; 
@@ -51,13 +52,13 @@ L2 = xx(3*N+1:4*N);
 IC = [X1(1) X2(2) L1(1) L2(1)];
 fexact = @(t,Xexact)duffingDE(Xexact,omega,beta);
 opts = odeset('RelTol',1e-20,'AbsTol',1e-20);
-[t, Xexact] = ode45(fexact,t,IC,opts);
-% X1error = abs(X1 - Xexact(:,1));
+[t, Xexact] = ode23(fexact,t,IC,opts);
+X1error = abs(X1 - Xexact(:,1));
 % X1error = abs(X1 - x1iclocs);
-% X2error = abs(X2 - Xexact(:,2));
+X2error = abs(X2 - Xexact(:,2));
 % X2error = abs(X2 - x2iclocs);
-% L1error = abs(L1 - Xexact(:,3));
-% L2error = abs(L2 - Xexact(:,4));
+L1error = abs(L1 - Xexact(:,3));
+L2error = abs(L2 - Xexact(:,4));
 % Uerror = abs(L2 - uiclocs);
 %%Plotting
 % figure(1)
@@ -80,10 +81,15 @@ ylabel('Exact states and control')
 
 figure(3)
 plot(t,X1error)
-figure(4)
+hold on
 plot(t,X2error)
-figure(5)
-plot(t,Uerror)
+figure(4)
+plot(t,L1error)
+hold on
+plot(t,L2error)
+
+% figure(5)
+% plot(t,Uerror)
 
 
 
