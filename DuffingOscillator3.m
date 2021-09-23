@@ -70,8 +70,8 @@ problem.states.xConstraintTol=[1e-15 1e-15];
 
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[5 1.5889]; 
-problem.states.xfu=[5 5];
+problem.states.xfl=[2 0.1]; 
+problem.states.xfu=[2 1];
 
 % Guess the state trajectories with [x0 xf]
 guess.states(:,1)=[0 5];
