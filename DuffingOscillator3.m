@@ -54,8 +54,8 @@ guess.parameters=[];
 problem.states.x0=[0 0];
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
-problem.states.x0l=[0  8.1236]; 
-problem.states.x0u=[0 20]; 
+problem.states.x0l=[0  -0.5]; 
+problem.states.x0u=[0 -0.4822]; 
 
 % State bounds. xl=< x <=xu
 problem.states.xl=[-20 -20];
@@ -70,12 +70,12 @@ problem.states.xConstraintTol=[1e-15 1e-15];
 
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[2 0.1]; 
-problem.states.xfu=[2 1];
+problem.states.xfl=[2 0.5881]; 
+problem.states.xfu=[2 0.5882];
 
 % Guess the state trajectories with [x0 xf]
-guess.states(:,1)=[0 5];
-guess.states(:,2)=[8.1236 1.5889];
+guess.states(:,1)=[0 2];
+guess.states(:,2)=[0 0.5882];
 
 
 

@@ -58,8 +58,8 @@ problem.states.x0l=[0 0];
 problem.states.x0u=[0 0]; 
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[-5 -5];
-problem.states.xu=[5 5];
+problem.states.xl=[-20 -20];
+problem.states.xu=[20 20];
 
 % State error bounds
 problem.states.xErrorTol_local=[1e-15 1e-15];
@@ -70,12 +70,12 @@ problem.states.xConstraintTol=[1e-15 1e-15];
 
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[1.41 0.89]; 
-problem.states.xfu=[5 5];
+problem.states.xfl=[0.8750 0.5349]; 
+problem.states.xfu=[0.8750 0.5349];
 
 % Guess the state trajectories with [x0 xf]
-guess.states(:,1)=[0 1.21];
-guess.states(:,2)=[0 0.98];
+guess.states(:,1)=[0 0.87];
+guess.states(:,2)=[0 0.53];
 
 
 

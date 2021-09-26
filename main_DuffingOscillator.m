@@ -4,13 +4,15 @@ clear all;close all;format compact;clc;
 
 %***** Check the final states value in the problem definition *****
 
-compTime_IClOCS_start = tic;
-[problem,guess]=DuffingOscillator1;          % Fetch the problem definition
-options= problem.settings(40);                  % Get options and solver settings
-[solution,MRHistory]=solveMyProblem( problem,guess,options);
-problem.sim.functions=@DuffingOscillator_Dynamics_Sim_Exact;
-[ tv1, xv1, uv1 ] = simulateSolution( problem, solution,'ode45');
-compTime_IClOCS_end = toc(compTime_IClOCS_start);
+BCtype = 'free';%'fixed','free','P0-Pf','P0-Vf','V0-Pf'
+
+% compTime_IClOCS_start = tic;
+% [problem,guess]=DuffingOscillator2;          % Fetch the problem definition
+% options= problem.settings(40);                  % Get options and solver settings
+% [solution,MRHistory]=solveMyProblem( problem,guess,options);
+% problem.sim.functions=@DuffingOscillator_Dynamics_Sim_Exact;
+% [ tv1, xv1, uv1 ] = simulateSolution( problem, solution,'ode45');
+% compTime_IClOCS_end = toc(compTime_IClOCS_start);
 % EPSILON = [1 10 100 1000 1e4 1e6];
 EPSILON = 100;
 for count = 1 : length(EPSILON)
@@ -26,7 +28,6 @@ x10 = 0;
 x20 = 0;
 x1f = 2;
 x2f = 1;
-BCtype = 'fixed';%'fixed','free','P0-Pf','P0-Vf','V0-Pf'
 BC = [x10,x20,x1f,x2f]';
 %% Approximation matrix
 tau = linspace(-1,1,N)';
@@ -65,8 +66,11 @@ switch BCtype
         
     case 'P0-Pf'
         beta = 0.94;
-        %         initial_guess = [20*ones(2*N,1);1*ones(2*N,1)];
-        initial_guess = [10*ones(1*N,1);10*ones(1*N,1);0*ones(1*N,1);0*ones(1*N,1)];
+        % initial_guess = [20*ones(2*N,1);1*ones(2*N,1)];
+        % works for Jacobian Off 
+%          initial_guess = [10*ones(1*N,1);10*ones(1*N,1);0*ones(1*N,1);0*ones(1*N,1)]; 
+        initial_guess = [2.3*ones(2*N,1);2.3*ones(2*N,1)];
+
         
     case 'P0-Vf'
         beta = 0.94;
@@ -89,23 +93,40 @@ J = 0.5*trapz(U.^2);
 JJ = 0.5*(U'*U);
 %% Shooting method
 disp('********** SHOOTING METHOD *************')
-shooting_guess = [3.85 0.96]';
-f2 = @(XXX) duffingShooting(XXX,omega,beta,BC,t);
-options2 = optimset('Display','iter','Algorithm','Levenberg-Marquardt','Jacobian','off','TolX',1e-20,'TolFun',1e-20);
-xi_shooting = fsolve(f2,shooting_guess,options2);
-fshooting = @(t,x_shooting)duffingDE(x_shooting,omega,beta);
-% options_shooting = odeset('RelTol',1e-16,'AbsTol',1e-15);
-IC_shooting = [x10; x20; xi_shooting];
+shooting_guess = [-0.4 -0.4]' ;
 compTime_shooting_start = tic;
-[t, x_shooting] = ode45(fshooting,t,IC_shooting);
+f2 = @(XXX) duffingShooting(XXX,omega,beta,BC,t,BCtype);
+% Find the initial Costates
+options2 = optimset('Display','iter','Algorithm','Levenberg-Marquardt','TolX',1e-20,'TolFun',1e-20);
+Li_shooting = fsolve(f2,shooting_guess,options2); 
+% Propagate with the initial costates
+fshooting = @(t,x_shooting)duffingDE(x_shooting,omega,beta);
+options_shooting = odeset('RelTol',1e-6,'AbsTol',1e-6);
+IC_shooting = [x10; x20; Li_shooting];
+[t, x_shooting] = ode45(fshooting,t,IC_shooting,options_shooting); 
 compTime_shooting_end = toc(compTime_shooting_start);
- %[x_shooting,fval2,exitflag2,output2]
+%[x_shooting,fval2,exitflag2,output2]
 u_shooting = -x_shooting(:,4);
 J_shooting =  0.5*trapz(u_shooting.^2);
 %% Newton's method
-initial_guess_newton = [3.8*ones(2*N,1);1*ones(2*N,1)];
-[resid,JacB] = duffingNAE(initial_guess_newton,BC,omega,beta,D,N,BCtype);
-solu = initial_guess;
+
+switch BCtype 
+    case 'fixed'
+        initial_guess = [2.35*ones(2*N,1);1.3*ones(2*N,1)];
+        [resid,JacB] = duffingNAE(initial_guess_newton,BC,omega,beta,D,N,BCtype);
+        solu = initial_guess_newton;
+    case 'free'
+        initial_guess_newton = [0*ones(2*N,1); 0*ones(2*N,1)];
+        [resid,JacB] = duffingNAE(initial_guess_newton,BC,omega,beta,D,N,BCtype);
+        solu = initial_guess_newton;
+    case 'P0-Pf'
+        
+    case 'P0-Vf'
+        
+    case 'V0-Pf'
+        
+end
+
 naes = 'NEWTON'; naep = 0.3;
 tol = 1e-9; MaxIter = 100; iter = 0; istop = 0;
 compTime_CRBFnewton_start = tic;
@@ -130,7 +151,7 @@ X2_newton = solu(N+1:2*N);
 L1_newton = solu(2*N+1:3*N);
 L2_newton = solu(3*N+1:4*N);
 ucrbf_newton = -L2_newton;
-costcrbf_newton = 0.5*trapz(ucrbf_newton.^2);
+J_newton = 0.5*trapz(ucrbf_newton.^2);
 %% Validation
 ticlocs=linspace(solution.T(1,1),solution.tf,N);
 x1iclocs = speval(solution,'X',1,t);
@@ -295,7 +316,13 @@ switch BCtype
         grid on
 %         set(gcf,'renderer','painters') 
 %         saveas(figure(5), 'D:\OneDrive - Knights - University of Central Florida\ARMY RESEARCH LAB\CRBF OCP Paper\Nonlinear Dynamics Journal Template\figures\duffing_free\allerr.eps','epsc2');
-%    
+%            figure(6)
+        plot(t,U)
+        hold on
+        plot(t,uiclocs)
+        plot(t,-L2exact)
+        legend('CRBF','ICLOCS','Exact')
+
     case "P0-Pf"
        figure(1)
         plot(t,X1,'b*')
@@ -354,7 +381,16 @@ switch BCtype
 %         set(gcf,'renderer','painters') 
 %         saveas(figure(5), 'D:\OneDrive - Knights - University of Central Florida\ARMY RESEARCH LAB\CRBF OCP Paper\Nonlinear Dynamics Journal Template\figures\duffing_PP\allerr.eps','epsc2');
 %    
-
+        figure(6)
+        plot(t,U)
+        hold on
+        plot(t,uiclocs)
+        plot(t,-L2exact)
+        plot(t,u_shooting)
+        legend('CRBF','ICLOCS','Exact','Shooting')
+        
+        
+        
        case "P0-Vf"
         figure(1)
         plot(t,X1,'b*')
@@ -660,7 +696,7 @@ end
 %         xlabel('Shape parameter c');
 %         ylabel('RMSE in states and control');
 %         legend('x_1','x_2','u')
-%         grid on
+%         grid onh˙
 %         set(gcf,'renderer','painters') 
 %         saveas(figure(13), 'D:\OneDrive - Knights - University of Central Florida\ARMY RESEARCH LAB\CRBF OCP Paper\Nonlinear Dynamics Journal Template\figures\duffing_VP\allRMSE.eps','epsc2');
 % end
