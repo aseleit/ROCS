@@ -10,14 +10,12 @@ fshooting = @(t,x) duffingDE(x,omega,beta);
 opts = odeset('RelTol',1e-13,'AbsTol',1e-13);
 [T,X] = ode45(fshooting,t,ICs_shooting,opts);
 
-% switch BCtype
-%     case 'fixed'
-%         R = [X(end,1) - x1f; X(end,2) - x2f];
-%     case 'free'
-%         R = [L1(end) - (X(end,1) - x1f); L2(end) - (X(end,2) - x2f)];
-%         J = eye(2);
-%     case 'P0-Pf'
-%         R = [X(end,1) - x1f; L2(end) - (X(end,2)-x2f)];
-% end
+switch BCtype
+    case 'fixed'
+        R = [X(end,1) - x1f; X(end,2) - x2f];
+    case 'free'
+        R = [X(end,3) - (X(end,1) - x1f); X(end,4) - (X(end,2) - x2f)];
+    case 'P0-Pf'
+        R = [X(end,1) - x1f; L2(end) - (X(end,2)-x2f)];
+end
 
-        R = [L1(end) - (X(end,1) - x1f); L2(end) - (X(end,2) - x2f)];

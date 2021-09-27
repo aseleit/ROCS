@@ -3,17 +3,17 @@ clear all;close all;format compact;clc;
 %local test one for local collocation
 
 %***** Check the final states value in the problem definition *****
-
 BCtype = 'free';%'fixed','free','P0-Pf','P0-Vf','V0-Pf'
 
-% compTime_IClOCS_start = tic;
-% [problem,guess]=DuffingOscillator2;          % Fetch the problem definition
-% options= problem.settings(40);                  % Get options and solver settings
-% [solution,MRHistory]=solveMyProblem( problem,guess,options);
-% problem.sim.functions=@DuffingOscillator_Dynamics_Sim_Exact;
-% [ tv1, xv1, uv1 ] = simulateSolution( problem, solution,'ode45');
-% compTime_IClOCS_end = toc(compTime_IClOCS_start);
-% EPSILON = [1 10 100 1000 1e4 1e6];
+compTime_IClOCS_start = tic;
+[problem,guess]=DuffingOscillator3;          % Fetch the problem definition
+options= problem.settings(40);                  % Get options and solver settings
+[solution,MRHistory]=solveMyProblem( problem,guess,options);
+problem.sim.functions=@DuffingOscillator_Dynamics_Sim_Exact;
+[ tv1, xv1, uv1 ] = simulateSolution( problem, solution,'ode45');
+compTime_IClOCS_end = toc(compTime_IClOCS_start);
+EPSILON = [1 10 100 1000 1e4 1e6];
+
 EPSILON = 100;
 for count = 1 : length(EPSILON)
 %% System parameters
@@ -92,8 +92,20 @@ U = -L2;
 J = 0.5*trapz(U.^2);
 JJ = 0.5*(U'*U);
 %% Shooting method
+switch BCtype
+    case 'fixed'
+        shooting_guess = [3.85 0.96]';
+    case 'free'
+        shooting_guess = [3.85 0.96]';
+    case 'P0-Pf'
+        shooting_guess = [0 0]';
+    case 'P0-Vf'
+        
+    case 'V0-Pf'
+        
+end
+
 disp('********** SHOOTING METHOD *************')
-shooting_guess = [-0.4 -0.4]' ;
 compTime_shooting_start = tic;
 f2 = @(XXX) duffingShooting(XXX,omega,beta,BC,t,BCtype);
 % Find the initial Costates
@@ -109,18 +121,19 @@ compTime_shooting_end = toc(compTime_shooting_start);
 u_shooting = -x_shooting(:,4);
 J_shooting =  0.5*trapz(u_shooting.^2);
 %% Newton's method
-
 switch BCtype 
     case 'fixed'
-        initial_guess = [2.35*ones(2*N,1);1.3*ones(2*N,1)];
+        initial_guess_newton = [3.8*ones(2*N,1);1*ones(2*N,1)];
         [resid,JacB] = duffingNAE(initial_guess_newton,BC,omega,beta,D,N,BCtype);
-        solu = initial_guess_newton;
+        solu = initial_guess;
     case 'free'
         initial_guess_newton = [0*ones(2*N,1); 0*ones(2*N,1)];
         [resid,JacB] = duffingNAE(initial_guess_newton,BC,omega,beta,D,N,BCtype);
         solu = initial_guess_newton;
     case 'P0-Pf'
-        
+        initial_guess_newton = [0*ones(2*N,1); 0*ones(2*N,1)];
+        [resid,JacB] = duffingNAE(initial_guess_newton,BC,omega,beta,D,N,BCtype);
+        solu = initial_guess_newton;
     case 'P0-Vf'
         
     case 'V0-Pf'
