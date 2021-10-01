@@ -3,11 +3,11 @@ clear all;close all;format compact;clc;
 %local test one for local collocation
 
 %***** Check the final states value in the problem definition *****
-BCtype = 'fixed';%'fixed','free','P0-Pf','P0-Vf','V0-Pf'
+BCtype = 'P0-Pf';%'fixed','free','P0-Pf','P0-Vf','V0-Pf'
 
 compTime_IClOCS_start = tic;
-[problem,guess]=DuffingOscillator1;          % Fetch the problem definition
-options= problem.settings(1,5);                  % Get options and solver settings
+[problem,guess]=DuffingOscillator3;          % Fetch the problem definition
+options= problem.settings(40);                  % Get options and solver settings
 [solution,MRHistory]=solveMyProblem( problem,guess,options);
 problem.sim.functions=@DuffingOscillator_Dynamics_Sim_Exact;
 [ tv1, xv1, uv1 ] = simulateSolution( problem, solution,'ode45');
@@ -80,7 +80,7 @@ switch BCtype
         initial_guess = [1*ones(1*N,1);1*ones(1*N,1);0.3*ones(1*N,1);0.3*ones(1*N,1)];
 end
 f = @(X) duffingNAE(X,BC,omega,beta,D,N,BCtype);
-options = optimset('Display','iter','Algorithm','Levenberg-Marquardt','Jacobian','off','TolX',1e-20,'TolFun',1e-20);
+options = optimset('Display','iter','Algorithm','Levenberg-Marquardt','Jacobian','on','TolX',1e-20,'TolFun',1e-20);
 compTime_CRBFfsolve_start = tic;
 [xx,fval1,exitflag1,output1] = fsolve(f,initial_guess,options);
 compTime_CRBFfsolve_end = toc(compTime_CRBFfsolve_start); % computational time elapsed
@@ -98,7 +98,7 @@ switch BCtype
     case 'free'
         shooting_guess = [3.85 0.96]';
     case 'P0-Pf'
-        shooting_guess = [1 1]';
+        shooting_guess = [0 0]';
     case 'P0-Vf'
         
     case 'V0-Pf'
@@ -131,7 +131,7 @@ switch BCtype
         [resid,JacB] = duffingNAE(initial_guess_newton,BC,omega,beta,D,N,BCtype);
         solu = initial_guess_newton;
     case 'P0-Pf'
-        initial_guess_newton = [2.3*ones(2*N,1); 2.3*ones(2*N,1)];
+        initial_guess_newton = [1*ones(2*N,1); 2.3*ones(2*N,1)];
         [resid,JacB] = duffingNAE(initial_guess_newton,BC,omega,beta,D,N,BCtype);
         solu = initial_guess_newton;
     case 'P0-Vf'
@@ -211,7 +211,7 @@ switch BCtype
         plot(t,Xexact(:,1),'ro')
         plot(t,Xexact(:,2),'rd')
         plot(t,-Xexact(:,4),'rs')
-        legend({'x1(CRBF)','x2(CRBF)','u(CRBF)','x1(ode45)','x2(ode45)','u(ode45)'},'Location','northwest')
+        legend({'x1(CRBF)','x2(CRBF)','u(CRBF)','x1(exact)','x2(exact)','u(exact)'},'Location','northwest')
         axis('tight')
         xlabel('Time [sec]')
         ylabel('States and control')
@@ -281,7 +281,7 @@ switch BCtype
         plot(t,Xexact(:,1),'ro')
         plot(t,Xexact(:,2),'rd')
         plot(t,-Xexact(:,4),'rs')
-        legend({'x1(CRBF)','x2(CRBF)','u(CRBF)','x1(ode45)','x2(ode45)','u(ode45)'},'Location','northwest')
+        legend({'x1(CRBF)','x2(CRBF)','u(CRBF)','x1(exact)','x2(exact)','u(exact)'},'Location','northwest')
         axis('tight')
         xlabel('Time [sec]')
         ylabel('States and control')

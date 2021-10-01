@@ -16,6 +16,6 @@ switch BCtype
     case 'free'
         R = [X(end,3) - (X(end,1) - x1f); X(end,4) - (X(end,2) - x2f)];
     case 'P0-Pf'
-        R = [X(end,1) - x1f; L2(end) - (X(end,2)-x2f)];
+        R = [X(end,1) - x1f; X(end,4) - (X(end,2)-x2f)];
 end
 

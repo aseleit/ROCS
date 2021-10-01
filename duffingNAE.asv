@@ -93,8 +93,8 @@ switch BCtype
         R(4*N) = L2(end) - s22*(x2(end)-x2f);
         %Constraints
         dR1dx1(1,:) = zeros(1,N);  dR1dx2(1,:) = zeros(1,N);        dR1dL1(1,:) = [1,zeros(1,N-1)];       dR1dL2(1,:) = zeros(1,N);
-        dR2dx1(1,:) = zeros(1,N);        dR2dx2(1,:) = [1,zeros(1,N-1)];  dR2dL1(1,:) = zeros(1,N);       dR2dL2(1,:) = zeros(1,N);
-        dR3dx1(N,:) = [zeros(1,N-1),-1]; dR3dx2(N,:) = zeros(1,N);        dR3dL1(N,:) = zeros(1,N); dR3dL2(N,:) = zeros(1,N);
+        dR2dx1(1,:) = zeros(1,N);        dR2dx2(1,:) = zeros(1,N);  dR2dL1(1,:) = zeros(1,N);       dR2dL2(1,:) = [1,zeros(1,N-1)];
+        dR3dx1(N,:) = [zeros(1,N-1),-1]; dR3dx2(N,:) = zeros(1,N);        dR3dL1(N,:) = [zeros(1,N-1),1]; dR3dL2(N,:) = zeros(1,N);
         dR4dx1(N,:) = zeros(1,N);        dR4dx2(N,:) = [zeros(1,N-1),1]; dR4dL1(N,:) = zeros(1,N);       dR4dL2(N,:) = zeros(1,N);
         
 end
