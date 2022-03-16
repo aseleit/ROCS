@@ -80,7 +80,7 @@ switch BCtype
         initial_guess = [1*ones(1*N,1);1*ones(1*N,1);0.3*ones(1*N,1);0.3*ones(1*N,1)];
 end
 f = @(X) duffingNAE(X,BC,omega,beta,D,N,BCtype);
-options = optimset('Display','iter','Algorithm','Levenberg-Marquardt','Jacobian','off','TolX',1e-20,'TolFun',1e-20);
+options = optimset('Display','iter','Algorithm','Levenberg-Marquardt','Jacobian','on','TolX',1e-20,'TolFun',1e-20);
 compTime_CRBFfsolve_start = tic;
 [xx,fval1,exitflag1,output1] = fsolve(f,initial_guess,options);
 compTime_CRBFfsolve_end = toc(compTime_CRBFfsolve_start); % computational time elapsed

@@ -49,7 +49,7 @@ X2 = xx(N+1:2*N);
 L1 = xx(2*N+1:3*N);
 L2 = xx(3*N+1:4*N);
 %% Validation
-IC = [X1(1) X2(2) L1(1) L2(1)];
+IC = [X1(1) X2(1) L1(1) L2(1)];
 fexact = @(t,Xexact)duffingDE(Xexact,omega,beta);
 opts = odeset('RelTol',1e-20,'AbsTol',1e-20);
 [t, Xexact] = ode23(fexact,t,IC,opts);

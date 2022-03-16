@@ -5,7 +5,7 @@ if(strcmp(method,'NEWTON'))
     if(norm(F)<1e5*eps)
         dx = zeros(size(B,2),1);
     else
-        dx = -B\F';
+        dx = -pinv(B)*F;
     end
 elseif(strcmp(method,'SFHM1'))
     v = parameter(1);
