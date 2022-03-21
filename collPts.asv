@@ -1,0 +1,14 @@
+%Function collPts()
+%Sets the collocation parameters
+% N: number of nodes
+% M: number of segments
+% New: number of equations 
+
+function gridparam = collPts()
+
+gridparam.N     = 40;% Number of nodes
+gridparam.M     = 1; % Number of elements
+gridparam.Neq   = 4;
+gridparam.tf    = 2;
+
+end

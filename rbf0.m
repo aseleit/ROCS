@@ -4,7 +4,7 @@ r = ti - t;
 % r = t - ti;
 R = abs(r);
 
-h = 1/c*R;
+h = R/c;
 
 F = sqrt(h.^2+1);
 

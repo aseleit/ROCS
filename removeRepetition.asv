@@ -1,0 +1,19 @@
+function solu = removeRepetition(X,te)
+X1 = X.X1;
+X1 = X.X2;
+X1 = X.X3;
+X1 = X.X1;
+T = te(:);
+[~, ind] = unique(T);
+duplicate_ind = flip(setdiff(1:size(T), ind));
+duplicate_value = T(duplicate_ind);
+for i = 1 : length(duplicate_ind)
+    T(duplicate_ind(i))  = [];
+    X1(duplicate_ind(i)) = [];
+    X2(duplicate_ind(i)) = [];
+    L1(duplicate_ind(i)) = [];
+    L2(duplicate_ind(i)) = [];
+end
+
+assignin('base','repetitions_in_sol,duplicate_value')
+assignin('base','duplicate_ind',duplicate_value')
