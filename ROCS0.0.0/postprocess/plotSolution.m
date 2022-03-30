@@ -4,18 +4,17 @@ X2 = solution.X2;
 L1 = solution.L1;
 L2 = solution.L2;
 te = approx.te;
-t = te(:);
 % figure(1)
-plot(t,X1,'*-')
+plot(T,X1,'*-')
 hold on
-plot(t,X2,'+-')
+plot(T,X2,'+-')
 % plot(t,-L2,'*')
 axis('tight')
 % legend('x1','x2','u')
 grid on
-plot(t,err.Xexact(:,1),'o')
+plot(T,err.Xexact(:,1),'o')
 hold on
-plot(t,err.Xexact(:,2),'o')
+plot(T,err.Xexact(:,2),'o')
 % plot(t,-Xexact(:,4),'o')
 axis('tight')
 legend('x1','x2','u','x1_exact','x2_exact','u_exact')

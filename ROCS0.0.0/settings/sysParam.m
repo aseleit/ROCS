@@ -21,8 +21,8 @@ sysparam.BC     = [x10,x20,x1f,x2f]';
 %% Initial Guess
 N = collpts.N;
 M = collpts.M;
-% sysparam.initial_guess = [2.35*ones(1*N*M,1); 1.3*ones(1*N*M,1); 2.35*ones(1*N*M,1); 1.3*ones(1*N*M,1)]; 
-sysparam.initial_guess = 1*ones( 4*N*M,1);
+sysparam.initial_guess = [2.35*ones(1*N*M,1); 1.3*ones(1*N*M,1); 2.35*ones(1*N*M,1); 1.3*ones(1*N*M,1)]; 
+% sysparam.initial_guess = 1*ones( 4*N*M,1);
 % sysparam.initial_guess = [1*ones(N*M,1);3.4*ones(N*M,1);1*ones(N*M,1);3.8*ones(N*M,1)];    %works for global collocation
 % sysparam.initial_guess = [1*rand(2*N*M,1);.8*rand(2*N*M,1)];
 % sysparam.initial_guess = [2.35*ones(2*N*M,1);1.3*ones(2*N*M,1)];

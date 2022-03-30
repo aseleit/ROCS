@@ -15,5 +15,5 @@ epsilon                  = sysparam.epsilon;
 approx.te                = getTimeSegments(collpts);
 approx.r                 = getRadiiMatrix(collpts,approx.te);
 [approx.phi,approx.phid] = getRBF(approx.r,epsilon,collpts.RBFtype);
-approx.D                 = approx.phid/approx.phi;
+approx.D                 = getD(approx.phid,approx.phi,collpts);
 end

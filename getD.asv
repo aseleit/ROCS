@@ -1,0 +1,2 @@
+function D = getD(phid,phi,collpts)
+

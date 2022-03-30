@@ -6,13 +6,14 @@
 % *************************************************************************
 % Ahmed Seleit, 2022, Aerospace Engineering, UCF
 % *************************************************************************
-function [phi,phid] = getRBF(R,c,RBFtype)
+function [phi,phid] = getRBF(r,c,RBFtype)
+R = abs(r);
 h = R/c;
 F = sqrt(h.^2+1);
 switch RBFtype
     case 'MCQ'  % Coupled Multiquadric
         phi  = F + R.^5 ;
-        phid = (h./c./sqrt(h.^2+1)+ 5*R.^4).*sign(R); %review sign(r)
+        phid = (h./c./sqrt(h.^2+1)+ 5*R.^4).*sign(r); %review sign(r)
     case 'CGA'  % Coupled Gaussian
         phi  = exp(-h.^2) + R.^5 ;
         phid = (-2*h./c.*exp(-h.^2) + 5*R.^4).*sign(R);

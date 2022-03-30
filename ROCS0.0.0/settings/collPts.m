@@ -11,7 +11,7 @@
 % *******************************************************
 function gridparam = collPts()
 gridparam.N         = 40;
-gridparam.M         = 1; 
+gridparam.M         = 3; 
 gridparam.Neq       = 4;
 gridparam.tf        = 2;
 gridparam.RBFtype   = 'MCQ';

@@ -15,6 +15,6 @@ M       = collpts.M;
 r = zeros(N,N,M);
 for k = 1 : M
     for i = 1 : N
-            r(i,:,k) = abs(te(:,i,k) - te(:,:,k));
+            r(i,:,k) = (te(:,i,k) - te(:,:,k));
     end
 end
