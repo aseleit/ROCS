@@ -9,6 +9,7 @@
 function solu = solveFsolve(collpts,sysparam,approx)
 IM              = initializeMatrices(collpts);
 J_local         = IM.J_local;
+J_pattern       = IM.J_pattern;
 J               = IM.J;
 ns              = IM.ns;
 Elb             = IM.Elb;
@@ -28,7 +29,7 @@ Neq             = collpts.Neq;
 D               = approx.D;
 %% Fsolve solution
 f       = @(X) duffingNAE_local(X,BC,omega,beta,D,N,Neq,ns,M,J,J_local,Elb,Erb,SLb,SRb,R,LJ_local,BCtype);
-options = optimoptions(@fsolve,'Display','iter','Algorithm','levenberg-marquardt','SpecifyObjectiveGradient',true,'StepTolerance',1e-20,'FunctionTolerance',1e-20,'UseParallel',true,'FiniteDifferenceType','central');
+options = optimoptions(@fsolve,'Display','iter','Algorithm','levenberg-marquardt','SpecifyObjectiveGradient',false,'StepTolerance',1e-20,'FunctionTolerance',1e-20,'UseParallel',true,'FiniteDifferenceType','central');
 % options = optimoptions(@fsolve,'Display','iter','Algorithm','levenberg-marquardt','SpecifyObjectiveGradient',false,'JacobPattern',J_pattern,'StepTolerance',1e-20,'FunctionTolerance',1e-20,'UseParallel',true,'FiniteDifferenceType','central');
 ti = tic;
 [solu,fval1,exitflag1,output1] = fsolve(f,initial_guess,options);

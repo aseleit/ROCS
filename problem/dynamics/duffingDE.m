@@ -9,7 +9,7 @@ x1dot = x2;
 x2dot = -(omega^2*x1 + beta*x1.^3 + L2);
 L1dot = L2.*(omega^2+3*beta*x1.^2);
 L2dot = - L1;
-xdot = [x1dot x2dot L1dot L2dot]';
+xdot = [x1dot; x2dot; L1dot; L2dot];
 end
 
 

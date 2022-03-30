@@ -10,8 +10,9 @@
 % Ahmed Seleit, 2022, Aerospace Engineering, UCF
 % *******************************************************
 function gridparam = collPts()
-gridparam.N     = 40;
-gridparam.M     = 1; 
-gridparam.Neq   = 4;
-gridparam.tf    = 2;
+gridparam.N         = 40;
+gridparam.M         = 1; 
+gridparam.Neq       = 4;
+gridparam.tf        = 2;
+gridparam.RBFtype   = 'MCQ';
 end
